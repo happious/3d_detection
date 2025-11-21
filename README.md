@@ -16,7 +16,8 @@
 &nbsp;&nbsp;&nbsp;[3. Docker](#3-docker)  
 - [References](#-references)
 ## 🚀 Introduction
-<img width="602" height="811" alt="image" src="https://github.com/user-attachments/assets/ea3397d6-495e-4fdc-b37a-57af46e4e58d" />
+<img width="510" height="687" alt="image" src="https://github.com/user-attachments/assets/e91a3eac-dbef-43a5-996d-97d78f74d30f" />
+
 
 OODIS는 360° 카메라와 360° LiDAR를 결합한 전방위 감지 시스템을 제공하며,
 ERP 기반 2D 투영과 DINO + OC-SORT로 안정적인 탐지·추적을 수행한다.
