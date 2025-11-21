@@ -1,0 +1,4 @@
+# ninja log v7
+0	3950	1762175386559471742	/home/jeonjehwan/catkin_ws/DINO/models/dino/ops/build/temp.linux-x86_64-3.8/home/jeonjehwan/catkin_ws/DINO/models/dino/ops/src/cpu/ms_deform_attn_cpu.o	a681acb53486f9f8
+0	11607	1762175386559471742	/home/jeonjehwan/catkin_ws/DINO/models/dino/ops/build/temp.linux-x86_64-3.8/home/jeonjehwan/catkin_ws/DINO/models/dino/ops/src/cuda/ms_deform_attn_cuda.o	e6870098499bb764
+0	13109	1762175386559471742	/home/jeonjehwan/catkin_ws/DINO/models/dino/ops/build/temp.linux-x86_64-3.8/home/jeonjehwan/catkin_ws/DINO/models/dino/ops/src/vision.o	efeef8a7e6b6efc
