@@ -57,6 +57,12 @@ cd src/ultralytics_ros/DINO
 mkdir weights
 mv ~/Downloads/checkpoint0029_4scale_swin.pth ~/3d_detection/src/ultralytics_ros/DINO/weights/
 ```
+
+```
+cd ..
+mkdir bag
+mv ~/your.bag ~/3d_detection/src/ultralytics_ros/bag
+```
 <br>
 
 ### iii. Catkin make
