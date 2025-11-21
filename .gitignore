@@ -23,8 +23,4 @@ build/
 dist/
 outputs/
 results/
-dataset/
-datasets/
-weights/
 runs/
-models/
