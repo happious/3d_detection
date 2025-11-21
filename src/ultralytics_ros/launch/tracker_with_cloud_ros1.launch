@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<launch>
+
+  <arg name="use_sim_time" default="true"/>
+  <param name="use_sim_time" value="$(arg use_sim_time)"/>
+
+  <arg name="bag" default="$(find ultralytics_ros)/bag/CJ.bag"/>
+  <arg name="bag_loop" default="true"/>
+  <arg name="bag_rate" default="0.05"/>
+
+  <arg name="lidar_topic"   default="/livox/lidar"/>
+  <arg name="tracking_topic" default="/tracking_result"/>
+  <arg name="tracking_3d_topic" default="/tracking_3d_result"/>
+
+  <arg name="image_width"  default="1920"/>
+  <arg name="image_height" default="960"/>
+
+  <param name="person_class_ids" value="[1]"/>
+
+  <arg name="R_cam2lidar"
+       default="[0.0151811, 0.00399802, -0.999877,
+                 -0.999876, -0.00423808, -0.0151981,
+                 -0.00429832, 0.999983, 0.00393319]"/>
+
+  <arg name="T_cam2lidar"
+       default="[0.00298802, 0.0157414, -0.247406]"/>
+
+  <arg name="erp_margin" default="10"/>
+
+  <arg name="voxel_leaf_size"   default="0.05"/>
+  <arg name="cluster_tolerance" default="0.20"/>
+  <arg name="min_cluster_size"  default="15"/>
+  <arg name="max_cluster_size"  default="15000"/>
+
+  <arg name="remove_ground"        default="true"/>
+  <arg name="ground_dist_thresh"   default="0.10"/>
+  <arg name="ground_max_tilt_deg"  default="25.0"/>
+  <arg name="ground_max_iterations" default="200"/>
+  <arg name="ground_probability"    default="0.99"/>
+  <arg name="ground_min_inliers"    default="200"/>
+
+  <arg name="remove_outliers" default="true"/>
+  <arg name="sor_mean_k"      default="20"/>
+  <arg name="sor_stddev_mul"  default="1.0"/>
+
+  <arg name="dbscan_min_pts" default="5"/>
+  <arg name="dbscan_eps"     default="0.4"/>
+
+  <node pkg="ultralytics_ros" type="tracker_with_cloud_node"
+        name="tracker_with_cloud_erp" output="screen">
+
+    <param name="lidar_topic" value="$(arg lidar_topic)"/>
+    <param name="tracking_result_topic" value="$(arg tracking_topic)"/>
+    <param name="tracking_3d_result_topic" value="$(arg tracking_3d_topic)"/>
+
+    <param name="image_width"  value="$(arg image_width)"/>
+    <param name="image_height" value="$(arg image_height)"/>
+
+    <rosparam param="R_cam2lidar" subst_value="true">$(arg R_cam2lidar)</rosparam>
+    <rosparam param="T_cam2lidar" subst_value="true">$(arg T_cam2lidar)</rosparam>
+
+    <param name="voxel_leaf_size"   value="$(arg voxel_leaf_size)"/>
+    <param name="cluster_tolerance" value="$(arg cluster_tolerance)"/>
+    <param name="min_cluster_size"  value="$(arg min_cluster_size)"/>
+    <param name="max_cluster_size"  value="$(arg max_cluster_size)"/>
+
+    <param name="dbscan_min_pts" value="$(arg dbscan_min_pts)"/>
+    <param name="dbscan_eps"     value="$(arg dbscan_eps)"/>
+
+    <param name="remove_ground"        value="$(arg remove_ground)"/>
+    <param name="ground_dist_thresh"   value="$(arg ground_dist_thresh)"/>
+    <param name="ground_max_tilt_deg"  value="$(arg ground_max_tilt_deg)"/>
+    <param name="ground_max_iterations" value="$(arg ground_max_iterations)"/>
+    <param name="ground_probability"    value="$(arg ground_probability)"/>
+    <param name="ground_min_inliers"    value="$(arg ground_min_inliers)"/>
+
+    <param name="remove_outliers" value="$(arg remove_outliers)"/>
+    <param name="sor_mean_k"      value="$(arg sor_mean_k)"/>
+    <param name="sor_stddev_mul"  value="$(arg sor_stddev_mul)"/>
+  </node>
+
+
+  <group if="$(arg bag_loop)">
+    <node pkg="rosbag" type="play" name="bag_play"
+          args="--clock --loop --rate $(arg bag_rate) $(arg bag)"
+          output="screen"/>
+  </group>
+
+</launch>

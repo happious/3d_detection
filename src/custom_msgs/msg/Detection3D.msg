@@ -1,0 +1,3 @@
+std_msgs/Header header
+BoundingBox3D bbox
+ObjectHypothesis hypothesis

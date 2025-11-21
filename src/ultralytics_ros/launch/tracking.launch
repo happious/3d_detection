@@ -1,0 +1,22 @@
+<launch>
+
+  <arg name="input_topic" default="/ricoh/image_raw" />
+  <arg name="output_topic" default="/tracking/image_raw" />
+  
+  <arg name="cfg_path"  default="$(find ultralytics_ros)/DINO/config/DINO/DINO_4scale.py"/>
+  <arg name="ckpt_path" default="$(find ultralytics_ros)/DINO/weights/checkpoint0011_4scale.pth"/>
+
+  <node pkg="ultralytics_ros"
+        type="dino_ocsort.py"
+        name="dino_ocsort_node"
+        output="screen">
+
+    <remap from="/ricoh/image_raw" to="$(arg input_topic)" />
+    <remap from="/tracking/image_raw" to="$(arg output_topic)" />
+
+    <param name="cfg_path"  value="$(arg cfg_path)" />
+    <param name="ckpt_path" value="$(arg ckpt_path)" />
+
+  </node>
+
+</launch>

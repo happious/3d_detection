@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<package format="2">
+  <name>ultralytics_ros</name>
+  <version>0.0.1</version>
+  <description>Ultralytics-based 2D→3D tracking fusion with LiDAR.</description>
+
+  <maintainer email="alpaca.zip@gmail.com">Alpaca-zip</maintainer>
+  <license>AGPL-3.0</license>
+
+  <!-- Build tool -->
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <!-- Dependencies needed to compile -->
+  <depend>roscpp</depend>
+  <depend>rospy</depend>
+  <depend>sensor_msgs</depend>
+  <depend>std_msgs</depend>
+  <depend>geometry_msgs</depend>
+  <depend>visualization_msgs</depend>
+  <depend>image_transport</depend>
+  <depend>cv_bridge</depend>
+  <depend>message_filters</depend>
+  <depend>pcl_ros</depend>
+  <depend>pcl_conversions</depend>
+  <depend>tf2_ros</depend>
+
+  <!-- Use custom_msgs generated elsewhere -->
+  <depend>custom_msgs</depend>
+
+  <!-- Exec-only tools -->
+  <exec_depend>rviz</exec_depend>
+  <exec_depend>image_view</exec_depend>
+
+  <!-- No message_generation needed here -->
+  <exec_depend>message_runtime</exec_depend>
+
+</package>
+

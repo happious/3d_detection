@@ -1,0 +1,119 @@
+Panels:
+  - Class: rviz/Displays
+    Help Height: 78
+    Name: Displays
+    Property Tree Widget:
+      Expanded:
+        - /Global Options1
+        - /lidar_cloud1
+        - /detection_cloud1
+        - /detection_marker1
+        - /Image1
+      Splitter Ratio: 0.5
+    Tree Height: 500
+  - Class: rviz/Selection
+    Name: Selection
+  - Class: rviz/Tool Properties
+    Expanded:
+      - /Publish Point1
+    Name: Tool Properties
+    Splitter Ratio: 0.6
+  - Class: rviz/Views
+    Expanded:
+      - /Current View1
+    Name: Views
+    Splitter Ratio: 0.5
+  - Class: rviz/Time
+    Name: Time
+    SyncMode: 0
+    SyncSource: detection_cloud
+
+Visualization Manager:
+  Class: ""
+  Enabled: true
+  Global Options:
+    Background Color: 48; 48; 48
+    Default Light: true
+    Fixed Frame: livox_frame            # <<< LiDAR 프레임으로 고정
+    Frame Rate: 30
+
+  Displays:
+    - Class: rviz/Grid
+      Name: Grid
+      Enabled: true
+      Plane: XY
+      Cell Size: 1
+
+    - Class: rviz/PointCloud2
+      Name: lidar_cloud
+      Enabled: true
+      Topic: /livox/lidar              # <<< LiDAR 원본 토픽
+      Queue Size: 5
+      Style: Points
+      Size (Pixels): 2
+      Size (m): 0.03
+      Position Transformer: XYZ
+      Color Transformer: AxisColor
+      Axis: Z
+      Alpha: 0.6
+      Decay Time: 0
+      Use Fixed Frame: true
+
+    - Class: rviz/PointCloud2
+      Name: detection_cloud
+      Enabled: true
+      Topic: /detection_cloud          # <<< YOLO 매칭 포인트
+      Queue Size: 5
+      Style: Points
+      Size (Pixels): 3
+      Size (m): 0.05
+      Position Transformer: XYZ
+      Color Transformer: FlatColor
+      Color: 0; 255; 0
+      Alpha: 1
+      Decay Time: 0
+      Use Fixed Frame: true
+
+    - Class: rviz/MarkerArray
+      Name: detection_marker
+      Enabled: true
+      Marker Topic: /detection_marker   # <<< 3D 박스
+      Queue Size: 100
+
+    - Class: rviz/Image
+      Name: Image
+      Enabled: true
+      Image Topic: /yolo_image          # <<< YOLO 결과 이미지(ERP)
+      Queue Size: 2
+      Transport Hint: raw
+      Normalize Range: true
+
+  Tools:
+    - Class: rviz/Interact
+      Hide Inactive Objects: true
+    - Class: rviz/MoveCamera
+    - Class: rviz/Select
+    - Class: rviz/FocusCamera
+    - Class: rviz/Measure
+    - Class: rviz/PublishPoint
+      Single click: true
+      Topic: /clicked_point
+
+  Views:
+    Current:
+      Class: rviz/Orbit
+      Name: Current View
+      Near Clip Distance: 0.01
+      Field of View: 0.7853981852531433
+      Distance: 15
+      Pitch: 0.6
+      Yaw: 2.4
+      Target Frame: <Fixed Frame>
+
+Window Geometry:
+  Height: 1000
+  Width: 1600
+  X: 100
+  Y: 50
+  Hide Left Dock: false
+  Hide Right Dock: true
