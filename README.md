@@ -46,7 +46,9 @@ ERP 기반 2D 투영과 DINO + OC-SORT로 안정적인 탐지·추적을 수행�
 <br>
 
 **1. Ricoh Theta Z1 (360° Camera)**
+<br>
 **2. Livox Mid-360 (360° LiDAR)**
+<br>
 **3. Custom Integrated Sensor Mount**
 # 🛠 Pineline
 <img width="1694" height="567" alt="image" src="https://github.com/user-attachments/assets/305b65ba-ad3f-4851-ba96-387f88517d26" />
