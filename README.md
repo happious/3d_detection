@@ -12,7 +12,7 @@
 - [Results](#-results)  
 - [Getting Started](#-getting-started)  
 &nbsp;&nbsp;&nbsp;[1. Installation](#1-installation)  
-&nbsp;&nbsp;&nbsp;[2. How to use](#2-how-to-use)  
+&nbsp;&nbsp;&nbsp;[2. How to run](#2-how-to-run)  
 &nbsp;&nbsp;&nbsp;[3. Docker](#3-docker)  
 - [References](#-references)
 ## 🚀 Introduction
@@ -126,7 +126,7 @@ catkin_make
 source devel/setup.bash
 ```
 
-### 2. How to use
+### 2. How to run
 ```
 roslaunch ultralytics_ros tracking.launch
 ```
