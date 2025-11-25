@@ -136,7 +136,7 @@ roslaunch ultralytics_ros tracker_with_cloud_ros1.launch
 
 ### 3. Docker
 
-i. dockerfile
+dockerfile
 
 ```
 # ==============================
