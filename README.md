@@ -149,7 +149,6 @@ roslaunch ultralytics_ros tracker_with_cloud_ros1.launch
 ### 3. Docker
 # 3D Detection + DINO + OC-SORT (ROS Noetic + Docker)
 Ubuntu 20.04 · ROS Noetic · PyTorch 1.12.1 + cu116  
-DINO CUDA ops fully prebuilt inside Docker
 
 ### 3.1 Workspace 생성 (Host)
 
@@ -159,7 +158,7 @@ cd ~/your_ws
 ```
 
 
-### 3.2 3d_detection 소스 클론
+### 3.2 3d_detection 소스 클론(Host)
 
 ```bash
 cd ~/your_ws
@@ -186,7 +185,7 @@ cp ~/CJ.bag \
 ```
 
 
-### 3.5 Dockerfile 생성
+### 3.5 Dockerfile 생성(Host)
 
 `~/your_ws/Dockerfile` 작성:
 
@@ -271,7 +270,15 @@ CMD ["/bin/bash"]
 
 
 
-### 3.6 Docker 이미지 빌드
+### 3.6 호스트에서 x11 허용(Host)
+
+```bash
+xhost +local:docker
+```
+
+
+
+### 3.7 Docker 이미지 빌드(Host)
 
 ```bash
 cd ~/your_ws
@@ -279,13 +286,18 @@ docker build -t 3d_detection_dino .
 ```
 
 
-
-### 3.7 컨테이너 실행
+### 3.8 gui+볼륨마운트 해서 컨테이너 실행
 
 ```bash
-docker run --gpus all -it --name dino_container 3d_detection_dino
+docker run --gpus all -it \
+  --name dino_container \
+  -v ~/your_ws/3d_detection:/opt/catkin_ws/src/3d_detection \
+  -e DISPLAY=$DISPLAY \
+  -v /tmp/.X11-unix:/tmp/.X11-unix \
+  --env="QT_X11_NO_MITSHM=1" \
+  3d_detection_dino
 ```
-### 3.8 DINO CUDA ops 빌드
+### 3.9 DINO CUDA ops 빌드
 ```bash
 cd /opt/catkin_ws/src/3d_detection/src/ultralytics_ros/DINO/models/dino/ops
 
@@ -311,11 +323,11 @@ EOF
 ```
 
 
-### 3.9 Launch 실행
+### 3.10 Launch 실행
 
 #### 터미널 1
 ```bash
-docker exec -it dino_container bash
+cd /opt/catkin_ws
 roslaunch ultralytics_ros tracking.launch
 ```
 
@@ -325,6 +337,12 @@ docker exec -it dino_container bash
 roslaunch ultralytics_ros tracker_with_cloud_ros1.launch
 ```
 
+
+#### 터미널 3
+```bash
+docker exec -it dino_container bash
+rviz
+```
 
 
 
