@@ -142,10 +142,8 @@ roslaunch ultralytics_ros tracker_with_cloud_ros1.launch
 Ubuntu 20.04 · ROS Noetic · PyTorch 1.12.1 + cu116  
 DINO CUDA ops fully prebuilt inside Docker
 ```
----
 
 ### 3.1 Workspace 생성 (Host)
----
 
 ```bash
 mkdir -p ~/your_ws
@@ -185,6 +183,12 @@ cp ~/CJ.bag \
 `~/your_ws/Dockerfile` 작성:
 
 ```dockerfile
+# =============================================
+# 3d_detection + DINO (RTX 30 Series)+ OC-SORT (ROS Noetic + Docker)
+#  - Ubuntu 20.04 + ROS Noetic
+#  - PyTorch 1.12.1 + cu116
+# =============================================
+
 FROM osrf/ros:noetic-desktop-full-focal
 
 ENV DEBIAN_FRONTEND=noninteractive \
