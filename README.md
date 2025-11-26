@@ -1,6 +1,7 @@
 # OODIS: Omnidirectional Object Detection and Tracking for Industrial Safety
-<결과 gif>
-
+<p align="center">
+  <img src ="src/assets/camera_night.gif"> <img src ="src/assets/Lidar_nigh.gif">
+</p>
 ## 📑 Overview
 - [Introduction](#-introduction)  
 - [Key Features](#-key-features)  
