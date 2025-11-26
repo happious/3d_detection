@@ -1,4 +1,10 @@
 # OODIS: Omnidirectional Object Detection and Tracking for Industrial Safety
+<p align="center">
+  <img alt="Python" src="https://img.shields.io/badge/Python-3.8-blue">
+  <img alt="PyTorch" src="https://img.shields.io/badge/PyTorch-1.12.1-red">
+  <img alt="Torchvision" src="https://img.shields.io/badge/Torchvision-0.13.1-orange">
+  <img alt="CUDA" src="https://img.shields.io/badge/CUDA-11.6-green">
+</p>
 
 <p align="center">
   <img src ="src/assets/camera_night.gif"> <img src ="src/assets/Lidar_nigh.gif">
