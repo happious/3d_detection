@@ -147,11 +147,9 @@ roslaunch ultralytics_ros tracker_with_cloud_ros1.launch
 ---
 
 ### 3. Docker
-```markdown
 # 3D Detection + DINO + OC-SORT (ROS Noetic + Docker)
 Ubuntu 20.04 · ROS Noetic · PyTorch 1.12.1 + cu116  
 DINO CUDA ops fully prebuilt inside Docker
-```
 
 ### 3.1 Workspace 생성 (Host)
 
@@ -193,76 +191,82 @@ cp ~/CJ.bag \
 `~/your_ws/Dockerfile` 작성:
 
 ```dockerfile
-# =============================================
-# 3d_detection + DINO (RTX 30 Series)+ OC-SORT (ROS Noetic + Docker)
+# 3d_detection + DINO (RTX 30 Series)
 #  - Ubuntu 20.04 + ROS Noetic
+#  - CUDA 11.6 + nvcc
 #  - PyTorch 1.12.1 + cu116
-# =============================================
-
-FROM osrf/ros:noetic-desktop-full-focal
+FROM nvidia/cuda:11.6.2-devel-ubuntu20.04
 
 ENV DEBIAN_FRONTEND=noninteractive \
     PYTHONDONTWRITEBYTECODE=1 \
-    PYTHONUNBUFFERED=1 \
-    PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION=python
+    PYTHONUNBUFFERED=1
 
+# 1) 기본 패키지 + ROS Noetic
 RUN apt-get update && apt-get install -y \
-    git build-essential cmake \
+    lsb-release \
+    gnupg2 \
+    curl \
+    git \
+    build-essential \
+    cmake \
     python3-pip python3-dev \
-    python3-rosdep python3-colcon-common-extensions \
     libgl1 libsm6 libxext6 libxrender1 libglib2.0-0 \
-    ffmpeg nvidia-cuda-toolkit \
+    ffmpeg \
     && rm -rf /var/lib/apt/lists/*
 
-RUN ln -s /usr/bin/python3 /usr/bin/python || true
+RUN sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list'
+RUN curl -s https://raw.githubusercontent.com/ros/rosdistro/master/ros.asc | apt-key add -
 
+RUN apt-get update && apt-get install -y \
+    ros-noetic-desktop-full \
+    python3-rosdep python3-colcon-common-extensions \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN rosdep init || true && rosdep update
+
+# 2) Python 기본 환경
 RUN pip3 install --no-cache-dir --upgrade pip \
- && pip3 install setuptools==59.5.0 wheel \
- && pip3 install importlib-metadata==4.13.0 \
- && pip3 install "typing-extensions<4.6.0"
+ && pip3 install --no-cache-dir \
+    setuptools==59.5.0 \
+    importlib-metadata==4.13.0 \
+    "typing-extensions<4.6.0" \
+    wheel
 
+# 3) PyTorch 1.12.1 + cu116
 RUN pip3 install --no-cache-dir \
     torch==1.12.1+cu116 torchvision==0.13.1+cu116 \
     --extra-index-url https://download.pytorch.org/whl/cu116 \
     --no-deps
 
-ENV LD_LIBRARY_PATH=/usr/local/lib/python3.8/dist-packages/torch/lib:${LD_LIBRARY_PATH}
+ENV CUDA_HOME=/usr/local/cuda
+ENV LD_LIBRARY_PATH=/usr/local/cuda/lib64:${LD_LIBRARY_PATH}
 
-RUN rosdep init || true && rosdep update
-
+# 4) Catkin workspace
 ENV CATKIN_WS=/opt/catkin_ws
-RUN mkdir -p $CATKIN_WS/src
-WORKDIR $CATKIN_WS/src
+RUN mkdir -p ${CATKIN_WS}/src
+WORKDIR ${CATKIN_WS}/src
 
-COPY 3d_detection/ $CATKIN_WS/src/3d_detection
+# 5) 3d_detection 소스 복사
+COPY 3d_detection/ ${CATKIN_WS}/src/3d_detection
 
-WORKDIR $CATKIN_WS/src/3d_detection
-RUN pip3 install --no-cache-dir --ignore-installed -r requirements.txt \
- && pip3 install "protobuf==3.20.*" \
- && pip3 install "numpy==1.23.5"
+# 6) Python requirements 설치 (torch/torchvision 건드리지 않도록 --no-deps)
+WORKDIR ${CATKIN_WS}/src/3d_detection
+RUN pip3 install --no-cache-dir --ignore-installed --no-deps -r requirements.txt \
+ && pip3 install --no-cache-dir "protobuf==3.20.*" "numpy==1.23.5" \
+ && pip3 install --no-cache-dir "requests<3" "tomli<2" "platformdirs<4"
 
-WORKDIR $CATKIN_WS
+# 7) ROS dependencies
+WORKDIR ${CATKIN_WS}
 RUN rosdep install --from-paths src --ignore-src -r -y || true
 
-WORKDIR $CATKIN_WS/src/3d_detection/src/ultralytics_ros/DINO/models/dino/ops
-
-RUN sed -i "s/raise NotImplementedError('Cuda is not availabel')/pass/" setup.py
-
-RUN python3 setup.py clean \
- && python3 setup.py build_ext --inplace \
- && python3 -m pip install .
-
-RUN python3 -c "import MultiScaleDeformableAttention as MSDA; print('MSDA import OK:', MSDA)"
-
-ENV PYTHONPATH=/opt/catkin_ws/src/3d_detection/src/ultralytics_ros/DINO/models/dino/ops:${PYTHONPATH}
-
-WORKDIR $CATKIN_WS
+# 8) catkin_make
 RUN /bin/bash -lc "source /opt/ros/noetic/setup.bash && catkin_make"
 
-RUN echo 'source /opt/ros/noetic/setup.bash' >> /root/.bashrc \
- && echo 'source /opt/catkin_ws/devel/setup.bash' >> /root/.bashrc
 
+WORKDIR ${CATKIN_WS}
 CMD ["/bin/bash"]
+
+
 ```
 
 
@@ -281,10 +285,33 @@ docker build -t 3d_detection_dino .
 ```bash
 docker run --gpus all -it --name dino_container 3d_detection_dino
 ```
+### 3.8 DINO CUDA ops 빌드
+```bash
+cd /opt/catkin_ws/src/3d_detection/src/ultralytics_ros/DINO/models/dino/ops
+
+# 깨끗하게 초기화
+pip3 uninstall -y MultiScaleDeformableAttention || true
+rm -rf build/ dist/ MultiScaleDeformableAttention.egg-info
+find . -name "MultiScaleDeformableAttention*.so" -delete || true
+
+# CUDA 11.6 + GPU 켜고 빌드
+export CUDA_HOME=/usr/local/cuda
+
+FORCE_CUDA=1 python3 setup.py build_ext --inplace
+FORCE_CUDA=1 python3 -m pip install .
+
+# import 테스트
+python3 - << 'EOF'
+import torch
+import MultiScaleDeformableAttention as MSDA
+print("torch:", torch.__version__, "cuda:", torch.version.cuda)
+print("cuda.is_available:", torch.cuda.is_available())
+print("MSDA:", MSDA)
+EOF
+```
 
 
-
-### 3.8 Launch 실행
+### 3.9 Launch 실행
 
 #### 터미널 1
 ```bash
