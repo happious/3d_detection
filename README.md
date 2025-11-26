@@ -139,14 +139,11 @@ roslaunch ultralytics_ros tracker_with_cloud_ros1.launch
 # 3D Detection + DINO + OC-SORT (ROS Noetic + Docker)
 Ubuntu 20.04 · ROS Noetic · PyTorch 1.12.1 + cu116  
 DINO CUDA ops fully prebuilt inside Docker
-
----
-
-## 3. Docker
-
+```
 ---
 
 ### 3.1 Workspace 생성 (Host)
+---
 
 ```bash
 mkdir -p ~/your_ws
