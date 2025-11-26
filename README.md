@@ -125,6 +125,7 @@ cd ~/3d_detection
 catkin_make
 source devel/setup.bash
 ```
+---
 
 ### 2. How to run
 ```
@@ -133,6 +134,7 @@ roslaunch ultralytics_ros tracking.launch
 ```
 roslaunch ultralytics_ros tracker_with_cloud_ros1.launch
 ```
+---
 
 ### 3. Docker
 ```markdown
@@ -150,7 +152,6 @@ mkdir -p ~/your_ws
 cd ~/your_ws
 ```
 
----
 
 ### 3.2 3d_detection 소스 클론
 
@@ -159,7 +160,6 @@ cd ~/your_ws
 git clone https://github.com/happious/3d_detection.git
 ```
 
----
 
 ### 3.3 DINO Weights 준비 (Host)
 
@@ -169,7 +169,7 @@ cp ~/Downloads/checkpoint0011_4scale.pth \
    ~/your_ws/3d_detection/src/ultralytics_ros/DINO/weights/
 ```
 
----
+
 
 ### 3.4 Bag 파일 준비 (Host)
 
@@ -179,7 +179,6 @@ cp ~/CJ.bag \
    ~/your_ws/3d_detection/src/ultralytics_ros/bag/
 ```
 
----
 
 ### 3.5 Dockerfile 생성
 
@@ -252,7 +251,7 @@ RUN echo 'source /opt/ros/noetic/setup.bash' >> /root/.bashrc \
 CMD ["/bin/bash"]
 ```
 
----
+
 
 ### 3.6 Docker 이미지 빌드
 
@@ -261,7 +260,7 @@ cd ~/your_ws
 docker build -t 3d_detection_dino .
 ```
 
----
+
 
 ### 3.7 컨테이너 실행
 
@@ -269,7 +268,7 @@ docker build -t 3d_detection_dino .
 docker run --gpus all -it --name dino_container 3d_detection_dino
 ```
 
----
+
 
 ### 3.8 Launch 실행
 
@@ -285,7 +284,6 @@ docker exec -it dino_container bash
 roslaunch ultralytics_ros tracker_with_cloud_ros1.launch
 ```
 
----
 
 
 
