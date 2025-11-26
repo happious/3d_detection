@@ -136,44 +136,77 @@ roslaunch ultralytics_ros tracker_with_cloud_ros1.launch
 
 ### 3. Docker
 
-dockerfile
+```markdown
+# 3D Detection + DINO + OC-SORT (ROS Noetic + Docker)
+Ubuntu 20.04 · ROS Noetic · PyTorch 1.12.1 + cu116  
+DINO CUDA ops fully prebuilt inside Docker
 
+---
+
+##  1. Workspace 생성 (Host)
+
+```bash
+mkdir -p ~/your_ws
+cd ~/your_ws
 ```
-# ==============================
-# 3d_detection Dockerfile (RTX 30 Series)
-#  - Ubuntu 20.04 + ROS Noetic
-#  - PyTorch 1.12.1 + cu116
-#  - Pre-build DINO CUDA ops
-# ==============================
 
+---
+
+##  2. 3d_detection 소스 클론
+
+```bash
+cd ~/your_ws
+git clone https://github.com/happious/3d_detection.git
+```
+
+---
+
+##  3. DINO Weights 준비 (Host)
+
+```bash
+mkdir -p ~/your_ws/3d_detection/src/ultralytics_ros/DINO/weights
+cp ~/Downloads/checkpoint0011_4scale.pth \
+   ~/your_ws/3d_detection/src/ultralytics_ros/DINO/weights/
+```
+
+---
+
+##  4. Bag 파일 준비 (Host)
+
+```bash
+mkdir -p ~/your_ws/3d_detection/src/ultralytics_ros/bag
+cp ~/CJ.bag \
+   ~/your_ws/3d_detection/src/ultralytics_ros/bag/
+```
+
+---
+
+##  5. Dockerfile 생성
+
+`~/your_ws/Dockerfile` 내용을 아래와 같이 작성:
+
+```dockerfile
 FROM osrf/ros:noetic-desktop-full-focal
 
 ENV DEBIAN_FRONTEND=noninteractive \
     PYTHONDONTWRITEBYTECODE=1 \
-    PYTHONUNBUFFERED=1
+    PYTHONUNBUFFERED=1 \
+    PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION=python
 
-# 1) System packages + CUDA toolkit
 RUN apt-get update && apt-get install -y \
-    git \
-    build-essential \
-    cmake \
-    python3-pip \
-    python3-dev \
-    python3-rosdep \
-    python3-colcon-common-extensions \
-    libgl1 \
-    libsm6 \
-    libxext6 \
-    libxrender1 \
-    libglib2.0-0 \
-    ffmpeg \
-    nvidia-cuda-toolkit \
+    git build-essential cmake \
+    python3-pip python3-dev \
+    python3-rosdep python3-colcon-common-extensions \
+    libgl1 libsm6 libxext6 libxrender1 libglib2.0-0 \
+    ffmpeg nvidia-cuda-toolkit \
     && rm -rf /var/lib/apt/lists/*
 
 RUN ln -s /usr/bin/python3 /usr/bin/python || true
 
-# 2) PyTorch / Torchvision (cu116)
-RUN pip3 install --no-cache-dir "typing-extensions<4.6.0"
+RUN pip3 install --no-cache-dir --upgrade pip \
+ && pip3 install setuptools==59.5.0 wheel \
+ && pip3 install importlib-metadata==4.13.0 \
+ && pip3 install "typing-extensions<4.6.0"
 
 RUN pip3 install --no-cache-dir \
     torch==1.12.1+cu116 torchvision==0.13.1+cu116 \
@@ -182,47 +215,74 @@ RUN pip3 install --no-cache-dir \
 
 ENV LD_LIBRARY_PATH=/usr/local/lib/python3.8/dist-packages/torch/lib:${LD_LIBRARY_PATH}
 
-# 3) rosdep init
 RUN rosdep init || true && rosdep update
 
-# 4) catkin workspace
 ENV CATKIN_WS=/opt/catkin_ws
-RUN mkdir -p ${CATKIN_WS}/src
-WORKDIR ${CATKIN_WS}/src
+RUN mkdir -p $CATKIN_WS/src
+WORKDIR $CATKIN_WS/src
 
-# 5) Copy source code
-COPY 3d_detection/ ${CATKIN_WS}/src/3d_detection
+COPY 3d_detection/ $CATKIN_WS/src/3d_detection
 
-# 6) Python requirements
-WORKDIR ${CATKIN_WS}/src/3d_detection
-RUN pip3 install --no-cache-dir -r requirements.txt
+WORKDIR $CATKIN_WS/src/3d_detection
+RUN pip3 install --no-cache-dir --ignore-installed -r requirements.txt \
+ && pip3 install "protobuf==3.20.*" \
+ && pip3 install "numpy==1.23.5"
 
-# 7) Install ROS dependencies
-WORKDIR ${CATKIN_WS}
+WORKDIR $CATKIN_WS
 RUN rosdep install --from-paths src --ignore-src -r -y || true
 
-# 8) Build DINO CUDA ops
-WORKDIR ${CATKIN_WS}/src/3d_detection/src/ultralytics_ros/DINO/models/dino/ops
+WORKDIR $CATKIN_WS/src/3d_detection/src/ultralytics_ros/DINO/models/dino/ops
 
-RUN sed -i "s/raise NotImplementedError('Cuda is not availabel')/pass  # disabled Cuda check/" setup.py
+RUN sed -i "s/raise NotImplementedError('Cuda is not availabel')/pass/" setup.py
 
-RUN python3 setup.py build install
+RUN python3 setup.py clean \
+ && python3 setup.py build_ext --inplace \
+ && python3 -m pip install .
 
-# 9) catkin build
-WORKDIR ${CATKIN_WS}
+RUN python3 -c "import MultiScaleDeformableAttention as MSDA; print('MSDA import OK:', MSDA)"
+
+ENV PYTHONPATH=/opt/catkin_ws/src/3d_detection/src/ultralytics_ros/DINO/models/dino/ops:${PYTHONPATH}
+
+WORKDIR $CATKIN_WS
 RUN /bin/bash -lc "source /opt/ros/noetic/setup.bash && catkin_make"
 
-# 10) Auto source
-RUN echo 'source /opt/ros/noetic/setup.bash' >> /root/.bashrc && \
-    echo 'source /opt/catkin_ws/devel/setup.bash' >> /root/.bashrc
+RUN echo 'source /opt/ros/noetic/setup.bash' >> /root/.bashrc \
+ && echo 'source /opt/catkin_ws/devel/setup.bash' >> /root/.bashrc
 
-# 11) Prepare weights & bags folder
-RUN mkdir -p ${CATKIN_WS}/src/3d_detection/src/ultralytics_ros/DINO/weights && \
-    mkdir -p ${CATKIN_WS}/src/3d_detection/src/ultralytics_ros/bag
-
-WORKDIR ${CATKIN_WS}
 CMD ["/bin/bash"]
+```
 
+---
+
+##  6. Docker 이미지 빌드
+
+```bash
+cd ~/your_ws
+docker build -t 3d_detection_dino .
+```
+
+---
+
+##  7. 컨테이너 실행
+
+```bash
+docker run --gpus all -it --name dino_container 3d_detection_dino
+```
+
+---
+
+##  8. Launch 실행
+
+### 터미널 1
+```bash
+docker exec -it dino_container bash
+roslaunch ultralytics_ros tracking.launch
+```
+
+### 터미널 2
+```bash
+docker exec -it dino_container bash
+roslaunch ultralytics_ros tracker_with_cloud_ros1.launch
 ```
 
 
