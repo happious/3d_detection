@@ -135,7 +135,6 @@ roslaunch ultralytics_ros tracker_with_cloud_ros1.launch
 ```
 
 ### 3. Docker
-
 ```markdown
 # 3D Detection + DINO + OC-SORT (ROS Noetic + Docker)
 Ubuntu 20.04 · ROS Noetic · PyTorch 1.12.1 + cu116  
@@ -143,7 +142,11 @@ DINO CUDA ops fully prebuilt inside Docker
 
 ---
 
-##  1. Workspace 생성 (Host)
+## 3. Docker
+
+---
+
+### 3.1 Workspace 생성 (Host)
 
 ```bash
 mkdir -p ~/your_ws
@@ -152,7 +155,7 @@ cd ~/your_ws
 
 ---
 
-##  2. 3d_detection 소스 클론
+### 3.2 3d_detection 소스 클론
 
 ```bash
 cd ~/your_ws
@@ -161,7 +164,7 @@ git clone https://github.com/happious/3d_detection.git
 
 ---
 
-##  3. DINO Weights 준비 (Host)
+### 3.3 DINO Weights 준비 (Host)
 
 ```bash
 mkdir -p ~/your_ws/3d_detection/src/ultralytics_ros/DINO/weights
@@ -171,7 +174,7 @@ cp ~/Downloads/checkpoint0011_4scale.pth \
 
 ---
 
-##  4. Bag 파일 준비 (Host)
+### 3.4 Bag 파일 준비 (Host)
 
 ```bash
 mkdir -p ~/your_ws/3d_detection/src/ultralytics_ros/bag
@@ -181,9 +184,9 @@ cp ~/CJ.bag \
 
 ---
 
-##  5. Dockerfile 생성
+### 3.5 Dockerfile 생성
 
-`~/your_ws/Dockerfile` 내용을 아래와 같이 작성:
+`~/your_ws/Dockerfile` 작성:
 
 ```dockerfile
 FROM osrf/ros:noetic-desktop-full-focal
@@ -254,7 +257,7 @@ CMD ["/bin/bash"]
 
 ---
 
-##  6. Docker 이미지 빌드
+### 3.6 Docker 이미지 빌드
 
 ```bash
 cd ~/your_ws
@@ -263,7 +266,7 @@ docker build -t 3d_detection_dino .
 
 ---
 
-##  7. 컨테이너 실행
+### 3.7 컨테이너 실행
 
 ```bash
 docker run --gpus all -it --name dino_container 3d_detection_dino
@@ -271,19 +274,23 @@ docker run --gpus all -it --name dino_container 3d_detection_dino
 
 ---
 
-##  8. Launch 실행
+### 3.8 Launch 실행
 
-### 터미널 1
+#### 터미널 1
 ```bash
 docker exec -it dino_container bash
 roslaunch ultralytics_ros tracking.launch
 ```
 
-### 터미널 2
+#### 터미널 2
 ```bash
 docker exec -it dino_container bash
 roslaunch ultralytics_ros tracker_with_cloud_ros1.launch
 ```
+
+---
+
+
 
 
 
