@@ -192,7 +192,7 @@ cp ~/CJ.bag \
 Create the file: ~/your_ws/Dockerfile
 
 ```bash
-mv ~/your_ws/docker/Dockerfile ~/your_ws/Dockerfile
+mv ~/your_ws/3d_detection/docker/Dockerfile ~/your_ws/Dockerfile
 ```
 
 
