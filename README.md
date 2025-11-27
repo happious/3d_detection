@@ -101,7 +101,7 @@ ERP 기반 2D 투영과 DINO + OC-SORT로 안정적인 탐지·추적을 수행�
 
 ## 🔧 Getting Started
 
-### 1. Installation
+# 1. Installation
 
 #### 1. RTX 30 Series
 **test : Python=3.8, PyTorch=1.12.1, Torchvision=0.13.1, CUDA=11.6**
@@ -137,7 +137,7 @@ source devel/setup.bash
 ```
 ---
 
-### 2. How to run
+# 2. How to run
 ```
 roslaunch ultralytics_ros tracking.launch
 ```
@@ -147,10 +147,12 @@ roslaunch ultralytics_ros tracker_with_cloud_ros1.launch
 ---
 
 ### 3. Docker
+# 3. Docker
 ### 3D Detection + DINO + OC-SORT (ROS Noetic + Docker)
 Ubuntu 20.04 · ROS Noetic · PyTorch 1.12.1 + cu116  
 
-### 3.1 Workspace 생성 (Host)
+
+### 3.1 Create Workspace (Host)
 
 ```bash
 mkdir -p ~/your_ws
@@ -158,7 +160,7 @@ cd ~/your_ws
 ```
 
 
-### 3.2 3d_detection 소스 클론(Host)
+### 3.2 Clone 3d_detection Source (Host)
 
 ```bash
 cd ~/your_ws
@@ -166,7 +168,7 @@ git clone https://github.com/happious/3d_detection.git
 ```
 
 
-### 3.3 DINO Weights 준비 (Host)
+### 3.3 Prepare DINO Weights (Host)
 
 ```bash
 mkdir -p ~/your_ws/3d_detection/src/ultralytics_ros/DINO/weights
@@ -176,7 +178,7 @@ cp ~/Downloads/checkpoint0011_4scale.pth \
 
 
 
-### 3.4 Bag 파일 준비 (Host)
+### 3.4 Prepare Bag File (Host)
 
 ```bash
 mkdir -p ~/your_ws/3d_detection/src/ultralytics_ros/bag
@@ -185,92 +187,16 @@ cp ~/CJ.bag \
 ```
 
 
-### 3.5 Dockerfile 생성(Host)
+### 3.5 Create Dockerfile (Host)
 
-`~/your_ws/Dockerfile` 작성:
+Create the file: ~/your_ws/Dockerfile
 
-```dockerfile
-# 3d_detection + DINO (RTX 30 Series)
-#  - Ubuntu 20.04 + ROS Noetic
-#  - CUDA 11.6 + nvcc
-#  - PyTorch 1.12.1 + cu116
-FROM nvidia/cuda:11.6.2-devel-ubuntu20.04
-
-ENV DEBIAN_FRONTEND=noninteractive \
-    PYTHONDONTWRITEBYTECODE=1 \
-    PYTHONUNBUFFERED=1
-
-# 1) 기본 패키지 + ROS Noetic
-RUN apt-get update && apt-get install -y \
-    lsb-release \
-    gnupg2 \
-    curl \
-    git \
-    build-essential \
-    cmake \
-    python3-pip python3-dev \
-    libgl1 libsm6 libxext6 libxrender1 libglib2.0-0 \
-    ffmpeg \
-    && rm -rf /var/lib/apt/lists/*
-
-RUN sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list'
-RUN curl -s https://raw.githubusercontent.com/ros/rosdistro/master/ros.asc | apt-key add -
-
-RUN apt-get update && apt-get install -y \
-    ros-noetic-desktop-full \
-    python3-rosdep python3-colcon-common-extensions \
-    && rm -rf /var/lib/apt/lists/*
-
-RUN rosdep init || true && rosdep update
-
-# 2) Python 기본 환경
-RUN pip3 install --no-cache-dir --upgrade pip \
- && pip3 install --no-cache-dir \
-    setuptools==59.5.0 \
-    importlib-metadata==4.13.0 \
-    "typing-extensions<4.6.0" \
-    wheel
-
-# 3) PyTorch 1.12.1 + cu116
-RUN pip3 install --no-cache-dir \
-    torch==1.12.1+cu116 torchvision==0.13.1+cu116 \
-    --extra-index-url https://download.pytorch.org/whl/cu116 \
-    --no-deps
-
-ENV CUDA_HOME=/usr/local/cuda
-ENV LD_LIBRARY_PATH=/usr/local/cuda/lib64:${LD_LIBRARY_PATH}
-
-# 4) Catkin workspace
-ENV CATKIN_WS=/opt/catkin_ws
-RUN mkdir -p ${CATKIN_WS}/src
-WORKDIR ${CATKIN_WS}/src
-
-# 5) 3d_detection 소스 복사
-COPY 3d_detection/ ${CATKIN_WS}/src/3d_detection
-
-# 6) Python requirements 설치 (torch/torchvision 건드리지 않도록 --no-deps)
-WORKDIR ${CATKIN_WS}/src/3d_detection
-RUN pip3 install --no-cache-dir --ignore-installed --no-deps -r requirements.txt \
- && pip3 install --no-cache-dir "protobuf==3.20.*" "numpy==1.23.5" \
- && pip3 install --no-cache-dir "requests<3" "tomli<2" "platformdirs<4"
-
-# 7) ROS dependencies
-WORKDIR ${CATKIN_WS}
-RUN rosdep install --from-paths src --ignore-src -r -y || true
-
-# 8) catkin_make
-RUN /bin/bash -lc "source /opt/ros/noetic/setup.bash && catkin_make"
-
-
-WORKDIR ${CATKIN_WS}
-CMD ["/bin/bash"]
-
-
+```bash
+mv ~/your_ws/docker/Dockerfile ~/your_ws/Dockerfile
 ```
 
 
-
-### 3.6 호스트에서 x11 허용(Host)
+### 3.6 Allow x11(Host)
 
 ```bash
 xhost +local:docker
@@ -278,7 +204,7 @@ xhost +local:docker
 
 
 
-### 3.7 Docker 이미지 빌드(Host)
+### 3.7 Build Docker Image (Host)
 
 ```bash
 cd ~/your_ws
@@ -286,7 +212,7 @@ docker build -t 3d_detection_dino .
 ```
 
 
-### 3.8 gui+볼륨마운트 해서 컨테이너 실행
+### 3.8 Run Container with GUI + Volume Mount
 
 ```bash
 docker run --gpus all -it \
@@ -297,22 +223,22 @@ docker run --gpus all -it \
   --env="QT_X11_NO_MITSHM=1" \
   3d_detection_dino
 ```
-### 3.9 DINO CUDA ops 빌드
+### 3.9 Build DINO CUDA Ops
 ```bash
 cd /opt/catkin_ws/src/3d_detection/src/ultralytics_ros/DINO/models/dino/ops
 
-# 깨끗하게 초기화
+# Clean build
 pip3 uninstall -y MultiScaleDeformableAttention || true
 rm -rf build/ dist/ MultiScaleDeformableAttention.egg-info
 find . -name "MultiScaleDeformableAttention*.so" -delete || true
 
-# CUDA 11.6 + GPU 켜고 빌드
+# CUDA 11.6 build
 export CUDA_HOME=/usr/local/cuda
 
 FORCE_CUDA=1 python3 setup.py build_ext --inplace
 FORCE_CUDA=1 python3 -m pip install .
 
-# import 테스트
+# import test
 python3 - << 'EOF'
 import torch
 import MultiScaleDeformableAttention as MSDA
@@ -323,22 +249,22 @@ EOF
 ```
 
 
-### 3.10 Launch 실행
+### 3.10 Launch
 
-#### 터미널 1
+#### Terminal 1
 ```bash
 cd /opt/catkin_ws
 roslaunch ultralytics_ros tracking.launch
 ```
 
-#### 터미널 2
+#### Terminal 2
 ```bash
 docker exec -it dino_container bash
 roslaunch ultralytics_ros tracker_with_cloud_ros1.launch
 ```
 
 
-#### 터미널 3
+#### Terminal 3
 ```bash
 docker exec -it dino_container bash
 rviz
