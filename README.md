@@ -147,12 +147,12 @@ roslaunch ultralytics_ros tracker_with_cloud_ros1.launch
 ---
 
 ### 3. Docker
-# 3. Docker
+#### 3. Docker
 ### 3D Detection + DINO + OC-SORT (ROS Noetic + Docker)
 Ubuntu 20.04 · ROS Noetic · PyTorch 1.12.1 + cu116  
 
 
-### 3.1 Create Workspace (Host)
+** 3.1 Create Workspace (Host)**
 
 ```bash
 mkdir -p ~/your_ws
@@ -160,7 +160,7 @@ cd ~/your_ws
 ```
 
 
-### 3.2 Clone 3d_detection Source (Host)
+**3.2 Clone 3d_detection Source (Host)**
 
 ```bash
 cd ~/your_ws
@@ -168,7 +168,7 @@ git clone https://github.com/happious/3d_detection.git
 ```
 
 
-### 3.3 Prepare DINO Weights (Host)
+**3.3 Prepare DINO Weights (Host)**
 
 ```bash
 mkdir -p ~/your_ws/3d_detection/src/ultralytics_ros/DINO/weights
@@ -178,7 +178,7 @@ cp ~/Downloads/checkpoint0011_4scale.pth \
 
 
 
-### 3.4 Prepare Bag File (Host)
+**3.4 Prepare Bag File (Host)**
 
 ```bash
 mkdir -p ~/your_ws/3d_detection/src/ultralytics_ros/bag
@@ -187,7 +187,7 @@ cp ~/CJ.bag \
 ```
 
 
-### 3.5 Create Dockerfile (Host)
+**3.5 Create Dockerfile (Host)**
 
 Create the file: ~/your_ws/Dockerfile
 
@@ -196,7 +196,7 @@ mv ~/your_ws/3d_detection/docker/Dockerfile ~/your_ws/Dockerfile
 ```
 
 
-### 3.6 Allow x11(Host)
+**3.6 Allow x11(Host)**
 
 ```bash
 xhost +local:docker
@@ -204,7 +204,7 @@ xhost +local:docker
 
 
 
-### 3.7 Build Docker Image (Host)
+**3.7 Build Docker Image (Host)**
 
 ```bash
 cd ~/your_ws
@@ -212,7 +212,7 @@ docker build -t 3d_detection_dino .
 ```
 
 
-### 3.8 Run Container with GUI + Volume Mount
+**3.8 Run Container with GUI + Volume Mount**
 
 ```bash
 docker run --gpus all -it \
@@ -223,7 +223,7 @@ docker run --gpus all -it \
   --env="QT_X11_NO_MITSHM=1" \
   3d_detection_dino
 ```
-### 3.9 Build DINO CUDA Ops
+**3.9 Build DINO CUDA Ops**
 ```bash
 cd /opt/catkin_ws/src/3d_detection/src/ultralytics_ros/DINO/models/dino/ops
 
@@ -249,22 +249,22 @@ EOF
 ```
 
 
-### 3.10 Launch
+**3.10 Launch**
 
-#### Terminal 1
+**Terminal 1**
 ```bash
 cd /opt/catkin_ws
 roslaunch ultralytics_ros tracking.launch
 ```
 
-#### Terminal 2
+**Terminal 2**
 ```bash
 docker exec -it dino_container bash
 roslaunch ultralytics_ros tracker_with_cloud_ros1.launch
 ```
 
 
-#### Terminal 3
+**Terminal 3**
 ```bash
 docker exec -it dino_container bash
 rviz
