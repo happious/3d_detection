@@ -152,7 +152,7 @@ roslaunch ultralytics_ros tracker_with_cloud_ros1.launch
 Ubuntu 20.04 · ROS Noetic · PyTorch 1.12.1 + cu116  
 
 
-** 3.1 Create Workspace (Host)**
+**3.1 Create Workspace (Host)**
 
 ```bash
 mkdir -p ~/your_ws
