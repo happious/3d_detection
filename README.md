@@ -101,7 +101,7 @@ ERP 기반 2D 투영과 DINO + OC-SORT로 안정적인 탐지·추적을 수행�
 
 ## 🔧 Getting Started
 
-# 1. Installation
+### 1. Installation
 
 #### 1. RTX 30 Series
 **test : Python=3.8, PyTorch=1.12.1, Torchvision=0.13.1, CUDA=11.6**
@@ -137,7 +137,7 @@ source devel/setup.bash
 ```
 ---
 
-# 2. How to run
+### 2. How to run
 ```
 roslaunch ultralytics_ros tracking.launch
 ```
