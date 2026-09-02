@@ -6,13 +6,13 @@
   <img alt="CUDA" src="https://img.shields.io/badge/CUDA-11.6-green">
 </p>
 
-📄 **Paper**: [OODIS 산업 안전을 위한 전방위 객체 탐지 시스템](docs/OODIS%20%EC%82%B0%EC%97%85%20%EC%95%88%EC%A0%84%EC%9D%84%20%EC%9C%84%ED%95%9C%20%EC%A0%84%EB%B0%A9%EC%9C%84%20%EA%B0%9D%EC%B2%B4%20%ED%83%90%EC%A7%80%20%EC%8B%9C%EC%8A%A4%ED%85%9C.pdf)  
-📌 **KRoC 2026 논문 투고**
 
 <p align="center">
   <img src ="src/assets/camera_night.gif"> <img src ="src/assets/Lidar_nigh.gif">
 </p>
 
+📄 **Paper**: [OODIS 산업 안전을 위한 전방위 객체 탐지 시스템](docs/OODIS%20%EC%82%B0%EC%97%85%20%EC%95%88%EC%A0%84%EC%9D%84%20%EC%9C%84%ED%95%9C%20%EC%A0%84%EB%B0%A9%EC%9C%84%20%EA%B0%9D%EC%B2%B4%20%ED%83%90%EC%A7%80%20%EC%8B%9C%EC%8A%A4%ED%85%9C.pdf)  
+📌 **KRoC 2026 논문 투고**
 
 ## 📑 Overview
 - [Introduction](#-introduction)  
