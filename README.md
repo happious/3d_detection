@@ -308,8 +308,10 @@ rviz
 ---
 
 ## 📕 References
-[1] DINO : https://github.com/IDEA-Research/DINO
+[1] Direct Visual-LiDAR Calibration : https://github.com/koide3/direct_visual_lidar_calibration
 <br>
-[2] OC-SORT : https://github.com/noahcao/OC_SORT
+[2] DINO : https://github.com/IDEA-Research/DINO
 <br>
-[3] ultralytics_ros : https://github.com/Alpaca-zip/ultralytics_ros
+[3] OC-SORT : https://github.com/noahcao/OC_SORT
+<br>
+[4] ultralytics_ros : https://github.com/Alpaca-zip/ultralytics_ros
