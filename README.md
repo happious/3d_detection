@@ -18,6 +18,7 @@
 - [Introduction](#-introduction)  
 - [Key Features](#-key-features)  
 - [Used Sensor](#-used-sensor)  
+- [Camera–LiDAR Calibration](#-cameralidar-calibration)  
 - [Pineline](#-pineline)  
 &nbsp;&nbsp;&nbsp;[1. 2D Detection (DINO)](#1-2d-detection-dino)  
 &nbsp;&nbsp;&nbsp;[2. Tracking (OC-SORT)](#2-tracking-oc-sort)  
@@ -66,6 +67,24 @@ ERP 기반 2D 투영과 DINO + OC-SORT로 안정적인 탐지·추적을 수행�
 **2. Livox Mid-360 (360° LiDAR)**
 <br>
 **3. Custom Integrated Sensor Mount**
+
+## 📐 Camera–LiDAR Calibration
+
+360° Camera와 3D LiDAR의 좌표계를 정합하기 위해
+[Direct Visual-LiDAR Calibration](https://github.com/koide3/direct_visual_lidar_calibration)을 활용하여
+**RICOH THETA Z1–Livox Mid-360 간 Extrinsic Calibration**을 수행했습니다.
+
+<p align="center">
+  <img src="src/assets/camera_cali.gif" width="760">
+</p>
+
+- **Camera**: RICOH THETA Z1 (360° Equirectangular Image)
+- **LiDAR**: Livox Mid-360
+- 360° 영상과 LiDAR Point Cloud를 이용해 두 센서 간 **회전·이동 변환값(Extrinsic Transform)** 산출
+- 산출된 변환값을 적용해 LiDAR Point를 Camera 좌표계로 변환
+- 3D LiDAR Point를 360° 파노라마 영상에 재투영하여 정합 결과 검증
+- Calibration 결과는 이후 3D Detection 단계의 **LiDAR–Camera 좌표변환 및 2D–3D Sensor Fusion**에 활용
+
 ## 🛠 Pineline
 <img width="1694" height="567" alt="image" src="https://github.com/user-attachments/assets/305b65ba-ad3f-4851-ba96-387f88517d26" />
 
